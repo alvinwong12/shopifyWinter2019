@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_17_211656) do
+ActiveRecord::Schema.define(version: 2019_01_18_012748) do
 
   create_table "cart_items", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.decimal "quantity", precision: 10, default: "0"
+    t.string "cart_item_id"
     t.bigint "cart_id"
     t.bigint "product_id"
     t.datetime "created_at", null: false
