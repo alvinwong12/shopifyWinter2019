@@ -1,7 +1,7 @@
 class Cart < ApplicationRecord
   self.table_name = "carts"
 
-  has_many :cart_items
+  has_many :cart_items, dependent: :destroy
 
   before_create :set_cart_id
 
@@ -18,7 +18,7 @@ class Cart < ApplicationRecord
   end
 
   def add_products(products=[])
-    raise ApiExceptions::CartError::ProductAdditionFail.new("Cannot add product to completed Cart \##{self.cart_id}") if completed?
+    raise ApiExceptions::CartError::CartModificationFail.new("Cannot add product to completed Cart \##{self.cart_id}") if completed?
     current_total = self.total
     new_items = []
     products.each do |product|
@@ -35,6 +35,27 @@ class Cart < ApplicationRecord
     self.cart_items << new_items
     new_items.each do |item|
       item.save
+    end
+    self.total = current_total
+    save
+  end
+
+  def update_products(products=[])
+    raise ApiExceptions::CartError::CartModificationFail.new("Cannot add product to completed Cart \##{self.cart_id}") if completed?
+    current_total = self.total
+    mod_items = []
+    products.each do |product|
+      p = Product.find_by_product_id(product["product_id"])
+      quantity = parse_quantity(product["quantity"])
+      cart_item = find_existing_cart_item(p)
+      raise ApiExceptions::CartError::CartModificationFail.new("Product \##{p.product_id} no in cart.") if cart_item.nil?
+      current_total += ((quantity - cart_item.quantity) * p.price)
+      cart_item.quantity = quantity
+      mod_items << cart_item
+    end
+    mod_items.each do |item|
+      item.save
+      item.destroy if item.quantity <= 0
     end
     self.total = current_total
     save

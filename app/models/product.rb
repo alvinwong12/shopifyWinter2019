@@ -1,7 +1,7 @@
 class Product < ApplicationRecord
   self.table_name = "products"
 
-  has_many :cart_items
+  has_many :cart_items, dependent: :destroy
 
   before_create :set_product_id
   
