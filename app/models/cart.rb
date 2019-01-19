@@ -18,21 +18,24 @@ class Cart < ApplicationRecord
   end
 
   def add_products(products=[])
-    raise ApiExceptions::CartError::ActivationFail.new("Cart #{self.cart_id} already activated") if completed?
+    raise ApiExceptions::CartError::ProductAdditionFail.new("Cannot add product to completed Cart \##{self.cart_id}") if completed?
     current_total = self.total
     new_items = []
     products.each do |product|
       p = Product.find_by_product_id(product["product_id"])
-      quantity = parse_quantity(product["quantity"]) || 1
+      quantity = parse_quantity(product["quantity"])
+      next if quantity == 0
       next unless p.available?(quantity)
       cart_item = find_existing_cart_item(p) || CartItem.new
       cart_item.product = p
       cart_item.quantity += quantity
       current_total += quantity * p.price
-      cart_item.save
-      new_items << cart_item unless (self.cart_items.include?(cart_item) || new_items.include?(cart_item) )
+      new_items << cart_item
     end
     self.cart_items << new_items
+    new_items.each do |item|
+      item.save
+    end
     self.total = current_total
     save
   end
@@ -56,7 +59,10 @@ class Cart < ApplicationRecord
   end
 
   def parse_quantity(quantity_string)
-    quantity_string !~ /\D/ ? quantity_string.to_i: nil
+    if quantity_string.nil? or !(quantity_string !~ /\D/)
+      raise ApiExceptions::CartError::InvalidQuantity.new("Please ensure a valid quantity")
+    end
+    quantity_string.to_i
   end
 
 end
