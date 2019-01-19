@@ -7,5 +7,7 @@ Rails.application.routes.draw do
   post "/carts", to: "carts#create"
   post "/carts/:id/products", to: "carts#add"
   post "/carts/:id/activate", to: "carts#activate"
+  put  "/carts/:id/products", to: "carts#update"
+  delete "/carts/:id", to: "carts#destroy"
   
 end
