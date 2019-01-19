@@ -28,6 +28,18 @@ class CartsController < ApplicationController
     render json: cart.to_json(include: [:cart_items => {only: :quantity, include: [:product => {except: :id}]}], except: :id), status: 200
   end
 
+  def destroy
+    cart = Cart.find_by_cart_id(cart_id)
+    cart.destroy
+    render json:{}, status: 204
+  end
+
+  def update
+    cart = Cart.find_by_cart_id(cart_id)
+    cart.update_products(products)
+    render json: cart.to_json(include: [:cart_items => {only: :quantity, include: [:product => {except: :id}]}], except: :id), status: 200 
+  end
+
   private
 
   def products
