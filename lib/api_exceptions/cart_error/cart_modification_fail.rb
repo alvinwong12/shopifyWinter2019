@@ -1,6 +1,6 @@
 module ApiExceptions
   class CartError < StandardError
-    class ProductAdditionFail < ApiExceptions::CartError
+    class CartModificationFail < ApiExceptions::CartError
     end
   end
 end
