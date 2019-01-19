@@ -3,20 +3,26 @@ class Cart < ApplicationRecord
 
   has_many :cart_items
 
-  scope :find_by_cart_id, -> (cart_id) { where(cart_id: cart_id) }
-
   before_create :set_cart_id
 
   def set_cart_id
     self.cart_id = self.hash
   end
 
+  def self.find_by_cart_id(cart_id)
+    cart = find_by(cart_id: cart_id)
+    if cart.nil? 
+      raise ActiveRecord::RecordNotFound.new("Cart \##{cart_id} not found")
+    end
+    cart
+  end
+
   def add_products(products=[])
-    return false if completed?
+    raise ApiExceptions::CartError::ActivationFail.new("Cart #{self.cart_id} already activated") if completed?
     current_total = self.total
     new_items = []
     products.each do |product|
-      p = Product.find_by_product_id(product["product_id"]).first
+      p = Product.find_by_product_id(product["product_id"])
       quantity = parse_quantity(product["quantity"]) || 1
       next unless p.available?(quantity)
       cart_item = find_existing_cart_item(p) || CartItem.new
@@ -36,8 +42,9 @@ class Cart < ApplicationRecord
   end
 
   def activate
+    raise ApiExceptions::CartError::ActivationFail.new("Cart \##{self.cart_id} already activated") if completed?
     self.cart_items.each do|item|
-      return false unless item.product.available? item.quantity
+      raise ApiExceptions::CartError::ActivationFail.new("#{item.quantity} #{item.product.title} is not available") unless item.product.available? item.quantity
       item.product.buy item.quantity
     end
     self.completed = true
