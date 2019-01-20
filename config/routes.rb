@@ -9,5 +9,7 @@ Rails.application.routes.draw do
   post "/carts/:id/activate", to: "carts#activate"
   put  "/carts/:id/products", to: "carts#update"
   delete "/carts/:id", to: "carts#destroy"
+
+  get "/", to: "welcome#index"
   
 end
