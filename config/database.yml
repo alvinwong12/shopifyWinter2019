@@ -50,5 +50,3 @@ test:
 production:
   url: <%= ENV['CLEARDB_DATABASE_URL'] %>
   database: shopify2019_production
-  username: shopify2019
-  password: <%= ENV['SHOPIFY2019_DATABASE_PASSWORD'] %>
