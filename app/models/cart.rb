@@ -6,7 +6,7 @@ class Cart < ApplicationRecord
   before_create :set_cart_id
 
   def set_cart_id
-    self.cart_id = self.hash
+    self.cart_id = self.hash.abs.to_s
   end
 
   def self.find_by_cart_id(cart_id)

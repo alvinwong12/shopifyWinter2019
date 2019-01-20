@@ -26,7 +26,7 @@ class Product < ApplicationRecord
   end
 
   def set_product_id
-    self.product_id = self.hash
+    self.product_id = self.hash.abs.to_s
   end
 
   def available?(amount=1)
