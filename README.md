@@ -5,6 +5,11 @@ API for consumers to find out product info and shop from the marketplace.
 ## Root
 https://evening-harbor-15855.herokuapp.com/
 
+Example API Request:
+```
+https://evening-harbor-15855.herokuapp.com/products
+```
+
 ## Products
 
 ##### GET /products
@@ -19,7 +24,7 @@ Get all products info.
 | price  | price of the product |
 | inventory_count | Amount of available product |
 | available_products_only | Restricts results to products with available inventory. Default to false. |
-| count | Restricts number of results. Default to all |
+| count | Restricts number of results. Default to no restrictions |
 
 Example query:
 ```
@@ -165,3 +170,17 @@ Example error response:
     "message": "XXX"
 }
 ```
+
+## Local Project Setup
+
+Ruby version of '2.5.3' is required
+
+'''
+git clone https://github.com/alvinwong12/shopifyWinter2019.git && cd shopify2019
+bundle install
+rake db:create
+rake db:migrate
+rake db:seed
+
+bin/rails server 
+'''
