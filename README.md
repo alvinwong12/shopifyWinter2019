@@ -175,7 +175,7 @@ Example error response:
 
 Ruby version of '2.5.3' is required
 
-'''
+```
 git clone https://github.com/alvinwong12/shopifyWinter2019.git && cd shopify2019
 bundle install
 rake db:create
@@ -183,4 +183,4 @@ rake db:migrate
 rake db:seed
 
 bin/rails server 
-'''
+```
